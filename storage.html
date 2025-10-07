@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Theme Selector Demo</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      padding: 50px;
+      transition: background-color 0.3s;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Choose Your Theme Color</h2>
+
+  <button onclick="setTheme('lightblue')">Light Blue</button>
+  <button onclick="setTheme('lightgreen')">Light Green</button>
+  <button onclick="setTheme('lightpink')">Light Pink</button>
+  <button onclick="clearTheme()">Reset Theme</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    const output = document.getElementById("output");
+
+    // Apply stored theme on page load
+    window.onload = () => {
+      const savedTheme = localStorage.getItem("theme") || sessionStorage.getItem("theme");
+      if(savedTheme) {
+        document.body.style.backgroundColor = savedTheme;
+      }
+      showStorageData();
+    };
+
+    function setTheme(color) {
+      //  localStorage → permanent
+      localStorage.setItem("theme", color);
+
+      //  sessionStorage → temporary (tab-specific)
+      sessionStorage.setItem("theme", color);
+
+      //  cookie → expires in 1 day
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + 1);
+      document.cookie = `themeColor=${color}; expires=${expiry.toUTCString()}; path=/`;
+
+      // Apply theme
+      document.body.style.backgroundColor = color;
+
+      // Show storage info
+      showStorageData();
+    }
+
+    function clearTheme() {
+      // Clear all storage
+      localStorage.removeItem("theme");
+      sessionStorage.removeItem("theme");
+      document.cookie = "themeColor=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+
+      document.body.style.backgroundColor = "white";
+      showStorageData();
+    }
+
+    function showStorageData() {
+      const local = localStorage.getItem("theme") || "Not set";
+      const session = sessionStorage.getItem("theme") || "Not set";
+
+      // Read cookie
+      const cookie = document.cookie.split('; ').find(row => row.startsWith('themeColor='))?.split('=')[1] || "Not set";
+
+      output.innerHTML = `
+LocalStorage: ${local}
+SessionStorage: ${session}
+Cookie: ${cookie}
+      `;
+    }
+  </script>
+</body>
+</html>

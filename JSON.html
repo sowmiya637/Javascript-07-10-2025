@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JSON Example</title>
+</head>
+<body>
+  <h2>Student Marks System</h2>
+  <pre id="output"></pre>
+
+  <script>
+    const output = document.getElementById("output");
+
+    //  Simulated JSON response from API (string)
+    const jsonResponse = `
+    {
+      "students": {
+        "Alice": { "marks": [80, 90, 70] },
+        "Bob": { "marks": [60, 55, 65] },
+        "Charlie": { "marks": [95, 85, 90] }
+      }
+    }`;
+
+    //  Parsing JSON string → JavaScript object
+    const data = JSON.parse(jsonResponse);
+
+    //  Calculate total and average for each student
+    for (let student in data.students) {
+      const marks = data.students[student].marks;  //take stud marks in array form
+      const total = marks.reduce((sum, mark) => sum + mark, 0);  //sum up all marks in the array.
+      const average = total / marks.length;
+      output.innerHTML += `${student} → Total: ${total}, Average: ${average.toFixed(2)}\n`;
+    }
+
+    //  Shallow copy example
+    const shallowCopy = { ...data.students };
+    shallowCopy.Alice.marks[0] = 0; // change first mark
+    output.innerHTML += `\nAfter shallow copy change:\n`;
+    output.innerHTML += `Original Alice marks: ${data.students.Alice.marks.join(", ")}\n`;
+    // notice original also affected because shallow copy only copies top-level references
+
+    //  Deep copy example using JSON
+    const deepCopy = JSON.parse(JSON.stringify(data.students));  //Converts the JavaScript object into a JSON string.
+    deepCopy.Bob.marks[0] = 100;
+    output.innerHTML += `\nAfter deep copy change:\n`;
+    output.innerHTML += `Original Bob marks: ${data.students.Bob.marks.join(", ")}\n`;
+    // original unaffected because deep copy copies nested objects
+
+    //  Stringify back to JSON
+    const jsonString = JSON.stringify(data.students);
+    output.innerHTML += `\nStringified JSON:\n${jsonString}`;   //prints the JSON string on your webpage’s output area.
+  </script>
+</body>
+</html>
